@@ -1,22 +1,21 @@
 package app
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/gofiber/fiber/v2"
+	"github.com/rizky201008/mywallet-backend/controller"
+)
 
-func InitRouter(app *fiber.App) {
-	mainRoute(app)
-}
-
-func mainRoute(app *fiber.App) {
+func InitRouter(app *fiber.App, transactionController controller.TransactionController) {
 	api := app.Group("/api")
 	api.Get("/", func(ctx *fiber.Ctx) error {
 		err := ctx.JSON(fiber.Map{
-			"code":    200,
-			"message": "ok",
-			"data":    nil,
+			"status": "0",
+			"data":   nil,
 		})
 		return err
 	})
 	authRoute(api)
+	transactionRoute(api, transactionController)
 }
 
 func authRoute(app fiber.Router) {
@@ -29,6 +28,11 @@ func authRoute(app fiber.Router) {
 	})
 }
 
-func featureRoute(app fiber.Router) {
-
+func transactionRoute(app fiber.Router, transactionController controller.TransactionController) {
+	transaction := app.Group("/transaction")
+	transaction.Get("/", transactionController.GetAllTransactions)
+	transaction.Get("/:id", transactionController.GetTransaction)
+	transaction.Post("/", transactionController.CreateTransaction)
+	transaction.Put("/:id", transactionController.UpdateTransaction)
+	transaction.Delete("/:id", transactionController.DeleteTransaction)
 }
