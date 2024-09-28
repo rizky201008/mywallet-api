@@ -3,6 +3,7 @@ package controller
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/rizky201008/mywallet-backend/service"
+	"net/http"
 )
 
 type TransactionController interface {
@@ -44,6 +45,7 @@ func (controller TransactionControllerImpl) GetTransaction(ctx *fiber.Ctx) error
 
 func (controller TransactionControllerImpl) CreateTransaction(ctx *fiber.Ctx) error {
 	response := controller.Service.CreateTransaction(ctx)
+	ctx.Status(http.StatusCreated)
 	return ctx.JSON(fiber.Map{
 		"status":  "0",
 		"message": "success",
