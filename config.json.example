@@ -1,0 +1,17 @@
+{
+  "app": {
+    "APP_NAME": "My Wallet - Backend",
+    "APP_URL": "http://localhost",
+    "APP_PORT": ":3000"
+  },
+  "db": {
+    "USERNAME": "db_username",
+    "PASSWORD": "db_password",
+    "HOST": "db_host",
+    "PORT": "db_port",
+    "NAME": "db_name"
+  },
+  "secrets": {
+    "JWT_SECRET": ""
+  }
+}
