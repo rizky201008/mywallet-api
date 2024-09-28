@@ -45,5 +45,6 @@ func RequestTransactionToTransaction(data web.RequestTransaction) domain.Transac
 	return domain.Transaction{
 		Amount: data.Amount,
 		Desc:   &data.Desc,
+		UserID: data.UserID,
 	}
 }
