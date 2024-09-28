@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/rizky201008/mywallet-backend/exception"
 	"github.com/rizky201008/mywallet-backend/helper"
 	"github.com/rizky201008/mywallet-backend/model/domain"
 	"github.com/rizky201008/mywallet-backend/model/web"
@@ -54,7 +55,9 @@ func (service TransactionServiceImpl) GetTransaction(ctx *fiber.Ctx) web.Respons
 	data, err := service.TransactionRepo.Find(service.DB, id)
 
 	if err != nil {
-		panic(err)
+		panic(exception.NotFoundError{
+			Err: err.Error(),
+		})
 	}
 	response = data
 
@@ -97,8 +100,17 @@ func (service TransactionServiceImpl) UpdateTransaction(ctx *fiber.Ctx) web.Resp
 	}
 	var response domain.Transaction
 	err = service.DB.Transaction(func(tx *gorm.DB) error {
-		transaction := helper.RequestTransactionToTransaction(*p)
-		updated, err := service.TransactionRepo.Update(tx, transaction, id)
+		transaction, err := service.TransactionRepo.Find(tx, id)
+		if err != nil {
+			panic(exception.NotFoundError{
+				Err: err.Error(),
+			})
+		}
+
+		transaction.Desc = &p.Desc
+		transaction.Amount = p.Amount
+
+		updated, err := service.TransactionRepo.Update(tx, transaction)
 		if err != nil {
 			return err
 		}
@@ -119,8 +131,14 @@ func (service TransactionServiceImpl) DeleteTransaction(ctx *fiber.Ctx) {
 	if err != nil {
 		panic(err)
 	}
+	transaction, err := service.TransactionRepo.Find(service.DB, id)
+	if err != nil {
+		panic(exception.NotFoundError{
+			Err: err.Error(),
+		})
+	}
 
-	err = service.TransactionRepo.Delete(service.DB, id)
+	err = service.TransactionRepo.Delete(service.DB, transaction)
 	if err != nil {
 		panic(err)
 	}
