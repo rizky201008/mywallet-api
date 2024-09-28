@@ -8,11 +8,11 @@ import (
 func InitRouter(app *fiber.App, transactionController controller.TransactionController) {
 	api := app.Group("/api")
 	api.Get("/", func(ctx *fiber.Ctx) error {
-		err := ctx.JSON(fiber.Map{
-			"status": "0",
-			"data":   nil,
+		return ctx.JSON(fiber.Map{
+			"status":  "0",
+			"message": "success",
+			"data":    nil,
 		})
-		return err
 	})
 	authRoute(api)
 	transactionRoute(api, transactionController)

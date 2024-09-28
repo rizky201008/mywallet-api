@@ -27,39 +27,44 @@ func (controller TransactionControllerImpl) GetAllTransactions(ctx *fiber.Ctx) e
 	response := controller.Service.GetAllTransaction()
 
 	return ctx.JSON(fiber.Map{
-		"status": "0",
-		"data":   response,
+		"status":  "0",
+		"message": "success",
+		"data":    response,
 	})
 }
 
 func (controller TransactionControllerImpl) GetTransaction(ctx *fiber.Ctx) error {
 	response := controller.Service.GetTransaction(ctx)
 	return ctx.JSON(fiber.Map{
-		"status": "0",
-		"data":   response,
+		"status":  "0",
+		"message": "success",
+		"data":    response,
 	})
 }
 
 func (controller TransactionControllerImpl) CreateTransaction(ctx *fiber.Ctx) error {
 	response := controller.Service.CreateTransaction(ctx)
 	return ctx.JSON(fiber.Map{
-		"status": "0",
-		"data":   response,
+		"status":  "0",
+		"message": "success",
+		"data":    response,
 	})
 }
 
 func (controller TransactionControllerImpl) UpdateTransaction(ctx *fiber.Ctx) error {
 	response := controller.Service.UpdateTransaction(ctx)
 	return ctx.JSON(fiber.Map{
-		"status": "0",
-		"data":   response,
+		"status":  "0",
+		"message": "success",
+		"data":    response,
 	})
 }
 
 func (controller TransactionControllerImpl) DeleteTransaction(ctx *fiber.Ctx) error {
 	controller.Service.DeleteTransaction(ctx)
 	return ctx.JSON(fiber.Map{
-		"status": "0",
-		"data":   nil,
+		"status":  "0",
+		"message": "success",
+		"data":    nil,
 	})
 }
