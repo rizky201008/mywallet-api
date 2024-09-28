@@ -1,7 +1,7 @@
 package test
 
 import (
-	"github.com/rizky201008/okx-wallet/model/domain"
+	"github.com/rizky201008/mywallet-backend/model/domain"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"

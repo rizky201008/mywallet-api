@@ -1,7 +1,7 @@
 package app
 
 import (
-	"github.com/rizky201008/okx-wallet/model/domain"
+	"github.com/rizky201008/mywallet-backend/model/domain"
 	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"

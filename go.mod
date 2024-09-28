@@ -1,4 +1,4 @@
-module github.com/rizky201008/okx-wallet
+module github.com/rizky201008/mywallet-backend
 
 go 1.22.0
 

@@ -1,6 +1,6 @@
 package main
 
-import "github.com/rizky201008/okx-wallet/app"
+import "github.com/rizky201008/mywallet-backend/app"
 
 func main() {
 	viper := app.InitViper()
