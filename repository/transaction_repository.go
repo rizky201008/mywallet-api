@@ -9,8 +9,8 @@ type TransactionRepository interface {
 	FindAll(db *gorm.DB) ([]domain.Transaction, error)
 	Find(db *gorm.DB, id int) (domain.Transaction, error)
 	Create(db *gorm.DB, transaction domain.Transaction) (domain.Transaction, error)
-	Update(db *gorm.DB, transaction domain.Transaction, id int) (domain.Transaction, error)
-	Delete(db *gorm.DB, id int) error
+	Update(db *gorm.DB, transaction domain.Transaction) (domain.Transaction, error)
+	Delete(db *gorm.DB, transaction domain.Transaction) error
 }
 
 type TransactionRepositoryImpl struct{}
@@ -37,11 +37,11 @@ func (TransactionRepositoryImpl) Create(db *gorm.DB, transaction domain.Transact
 	return transaction, create.Error
 }
 
-func (TransactionRepositoryImpl) Update(db *gorm.DB, transaction domain.Transaction, id int) (domain.Transaction, error) {
-	update := db.Where("id = ?", id).Updates(&transaction)
+func (TransactionRepositoryImpl) Update(db *gorm.DB, transaction domain.Transaction) (domain.Transaction, error) {
+	update := db.Where("id = ?", transaction.ID).Updates(&transaction)
 	return transaction, update.Error
 }
 
-func (TransactionRepositoryImpl) Delete(db *gorm.DB, id int) error {
-	return db.Delete(&domain.Transaction{}, id).Error
+func (TransactionRepositoryImpl) Delete(db *gorm.DB, transaction domain.Transaction) error {
+	return db.Delete(&domain.Transaction{}, transaction.ID).Error
 }
