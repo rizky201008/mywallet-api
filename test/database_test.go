@@ -1,15 +1,40 @@
 package test
 
 import (
+	"github.com/rizky201008/okx-wallet/model/domain"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"testing"
+	"time"
 )
 
-func TestConnectDb(t *testing.T) {
-	vipers := initViper()
-	dsn := vipers.GetString("db.USERNAME") + ":" + vipers.GetString("db.PASSWORD") + "@tcp(" + vipers.GetString("db.HOST") + ":" + vipers.GetString("db.PORT") + ")/" + vipers.GetString("db.NAME")
-	_, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
-	assert.Nil(t, err)
+func OpenConnection() *gorm.DB {
+	dialect := mysql.Open("user:password@tcp(localhost:3310)/mywallet_test?parseTime=true")
+	db, err := gorm.Open(dialect, &gorm.Config{})
+	if err != nil {
+		panic(err)
+	}
+	err = db.AutoMigrate(&domain.User{}, &domain.Transaction{})
+	if err != nil {
+		panic(err)
+	}
+
+	sqlDB, err := db.DB()
+	if err != nil {
+		panic(err)
+	}
+
+	sqlDB.SetMaxOpenConns(100)
+	sqlDB.SetMaxIdleConns(10)
+	sqlDB.SetConnMaxLifetime(30 * time.Minute)
+	sqlDB.SetConnMaxIdleTime(5 * time.Minute)
+
+	return db
+}
+
+var db = OpenConnection()
+
+func TestOpenConnection(t *testing.T) {
+	assert.NotNil(t, db)
 }

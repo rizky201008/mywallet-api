@@ -8,7 +8,7 @@ import (
 )
 
 func InitDb(viper *viper.Viper) *gorm.DB {
-	dsn := viper.GetString("db.USERNAME") + ":" + viper.GetString("db.PASSWORD") + "@tcp(" + viper.GetString("db.HOST") + ":" + viper.GetString("db.PORT") + ")/" + viper.GetString("db.NAME")
+	dsn := viper.GetString("db.USERNAME") + ":" + viper.GetString("db.PASSWORD") + "@tcp(" + viper.GetString("db.HOST") + ":" + viper.GetString("db.PORT") + ")/" + viper.GetString("db.NAME") + "?parseTime=true"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database" + err.Error())
