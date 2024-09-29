@@ -18,7 +18,7 @@ func TestFindAll(t *testing.T) {
 	assert.Nil(t, err)
 }
 
-func insertExampleData() {
+func insertExampleTransactionData() {
 	data := domain.Transaction{
 		UserID: 1,
 		Desc:   nil,
@@ -27,7 +27,7 @@ func insertExampleData() {
 	db.Save(&data)
 }
 
-func truncateAllData() {
+func truncateAllTransactionData() {
 	query := db.Exec("TRUNCATE TABLE transactions")
 	if query.Error != nil {
 		panic(query.Error)
@@ -35,8 +35,8 @@ func truncateAllData() {
 }
 
 func TestFindSuccess(t *testing.T) {
-	defer truncateAllData()
-	insertExampleData()
+	defer truncateAllTransactionData()
+	insertExampleTransactionData()
 	result, err := repo.Find(db, 1)
 
 	fmt.Println(result)
@@ -45,8 +45,8 @@ func TestFindSuccess(t *testing.T) {
 }
 
 func TestFindError(t *testing.T) {
-	defer truncateAllData()
-	insertExampleData()
+	defer truncateAllTransactionData()
+	insertExampleTransactionData()
 	_, err := repo.Find(db, 2)
 
 	assert.NotNil(t, err)
@@ -54,7 +54,7 @@ func TestFindError(t *testing.T) {
 }
 
 func TestCreateSuccess(t *testing.T) {
-	defer truncateAllData()
+	defer truncateAllTransactionData()
 	transaction := domain.Transaction{
 		UserID: 1,
 		Desc:   nil,
@@ -68,7 +68,7 @@ func TestCreateSuccess(t *testing.T) {
 }
 
 func TestCreateFailed(t *testing.T) {
-	defer truncateAllData()
+	defer truncateAllTransactionData()
 	transaction := domain.Transaction{
 		UserID: 100,
 		Desc:   nil,
@@ -82,35 +82,38 @@ func TestCreateFailed(t *testing.T) {
 }
 
 func TestUpdateSuccess(t *testing.T) {
-	defer truncateAllData()
-	insertExampleData()
-	transaction := domain.Transaction{
-		UserID: 1,
-		Desc:   nil,
-		Amount: 32000.00,
-	}
-	_, err := repo.Update(db, transaction, 1)
+	defer truncateAllTransactionData()
+	insertExampleTransactionData()
+	transaction, err := repo.Find(db, 1)
+	assert.Nil(t, err)
+	_, err = repo.Update(db, transaction)
 	assert.Nil(t, err)
 	fmt.Println(transaction)
 }
 
-func TestUpdateFailed(t *testing.T) {
-	defer truncateAllData()
-	insertExampleData()
-	transaction := domain.Transaction{
-		UserID: 13,
-		Desc:   nil,
-		Amount: 32000.00,
-	}
-	_, err := repo.Update(db, transaction, 1)
+func TestUpdateFailedNotfound(t *testing.T) {
+	defer truncateAllTransactionData()
+	insertExampleTransactionData()
+	_, err := repo.Find(db, 1000)
 	assert.NotNil(t, err)
-	fmt.Println(err)
+	fmt.Println("Code must be exit")
+}
+
+func TestUpdateFailedInvalidInput(t *testing.T) {
+	defer truncateAllTransactionData()
+	insertExampleTransactionData()
+	transaction, err := repo.Find(db, 1)
+	assert.Nil(t, err)
+	transaction.UserID = 3000 // user not found
+	_, err = repo.Update(db, transaction)
+	assert.NotNil(t, err)
 }
 
 func TestDeleteSuccess(t *testing.T) {
-	defer truncateAllData()
-	insertExampleData()
-	err := repo.Delete(db, 1)
-
+	defer truncateAllTransactionData()
+	insertExampleTransactionData()
+	transaction, err := repo.Find(db, 1)
+	assert.Nil(t, err)
+	err = repo.Delete(db, transaction)
 	assert.Nil(t, err)
 }
