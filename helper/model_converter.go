@@ -48,3 +48,17 @@ func RequestTransactionToTransaction(data web.RequestTransaction) domain.Transac
 		UserID: data.UserID,
 	}
 }
+
+func UserToResponseUser(data domain.User) web.ResponseUser {
+	return web.ResponseUser{
+		ID:       int(data.ID),
+		Username: data.Username,
+	}
+}
+
+func RequestUserToUser(data web.RequestUser) domain.User {
+	return domain.User{
+		Username: data.Username,
+		Password: data.Password,
+	}
+}
