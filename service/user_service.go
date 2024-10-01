@@ -28,8 +28,8 @@ type UserServiceImpl struct {
 	Viper    *viper.Viper
 }
 
-func NewUserService(userRepo repository.UserRepository, db *gorm.DB) UserService {
-	return UserServiceImpl{UserRepo: userRepo, DB: db}
+func NewUserService(db *gorm.DB, userRepo repository.UserRepository, vipers *viper.Viper) UserService {
+	return UserServiceImpl{UserRepo: userRepo, DB: db, Viper: vipers}
 }
 
 func (service UserServiceImpl) Login(ctx *fiber.Ctx) web.ResponseLogin {
