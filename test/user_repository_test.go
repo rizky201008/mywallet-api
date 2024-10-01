@@ -2,11 +2,13 @@ package test
 
 import (
 	"fmt"
+	"github.com/golang-jwt/jwt"
 	"github.com/rizky201008/mywallet-backend/model/domain"
 	"github.com/rizky201008/mywallet-backend/repository"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/crypto/bcrypt"
 	"testing"
+	"time"
 )
 
 var userRepository = repository.NewUserRepository()
@@ -119,4 +121,15 @@ func TestDeleteUserSuccess(t *testing.T) {
 	assert.Nil(t, err)
 	err = userRepository.DeleteUser(db, user)
 	assert.Nil(t, err)
+}
+
+func TestCreateJwtToken(t *testing.T) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"sub": 3,
+		"exp": time.Now().Add(time.Hour * 24).Unix(),
+	})
+	secret := []byte("AUIWUeyiqwueyqiueoupOIQEWPOIWERJLjklkjslMFNAKJSd")
+	tokenString, err := token.SignedString(secret)
+	assert.Nil(t, err)
+	fmt.Println(tokenString)
 }
