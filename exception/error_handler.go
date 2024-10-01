@@ -11,6 +11,11 @@ func ErrorHandler(ctx *fiber.Ctx, err error) error {
 		return notFoundErr
 	}
 
+	notMatchErr, notMatch := notMatchError(ctx, err)
+	if notMatch {
+		return notMatchErr
+	}
+
 	ctx.Status(fiber.StatusInternalServerError)
 	return ctx.JSON(fiber.Map{
 		"status":  "1",
@@ -26,6 +31,22 @@ func notFoundError(ctx *fiber.Ctx, err error) (error, bool) {
 		ctx.Status(fiber.StatusNotFound)
 		return ctx.JSON(fiber.Map{
 			"status":  "2",
+			"message": exception.Error(),
+			"data":    nil,
+		}), true
+
+	} else {
+		return nil, false
+	}
+}
+
+func notMatchError(ctx *fiber.Ctx, err error) (error, bool) {
+	var exception NotMatchError
+	ok := errors.As(err, &exception)
+	if ok {
+		ctx.Status(fiber.StatusUnauthorized)
+		return ctx.JSON(fiber.Map{
+			"status":  "3",
 			"message": exception.Error(),
 			"data":    nil,
 		}), true
