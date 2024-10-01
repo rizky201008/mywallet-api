@@ -1,17 +1,33 @@
 package main
 
 import (
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/rizky201008/mywallet-backend/app"
-	"github.com/rizky201008/mywallet-backend/controller"
-	"github.com/rizky201008/mywallet-backend/repository"
-	"github.com/rizky201008/mywallet-backend/service"
+	"github.com/rizky201008/mywallet-backend/exception"
 )
 
+func init() {
+	app.InitViper()
+	app.InitRepository()
+	app.InitDb()
+	app.InitService()
+	app.InitController()
+}
+
 func main() {
-	viper := app.InitViper()
-	db := app.InitDb(viper)
-	transactionRepo := repository.NewTransactionRepository()
-	transactionService := service.NewTransactionService(db, transactionRepo)
-	transactionController := controller.NewTransactionController(transactionService)
-	app.InitFiber(viper, transactionController)
+	viper := app.Vipers
+	apps := fiber.New(fiber.Config{
+		ErrorHandler: exception.ErrorHandler,
+	})
+
+	apps.Use(recover.New())
+
+	app.MainRouter(apps)
+
+	err := apps.Listen(viper.GetString("app.APP_PORT"))
+
+	if err != nil {
+		panic(err)
+	}
 }
