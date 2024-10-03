@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-var repo repository.TransactionRepository = repository.NewTransactionRepository()
+var repo = repository.NewTransactionRepository()
 
 func TestFindAll(t *testing.T) {
 	result, err := repo.FindAll(db)

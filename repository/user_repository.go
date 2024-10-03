@@ -11,9 +11,16 @@ type UserRepository interface {
 	FindUserByUsername(db *gorm.DB, username string) (domain.User, error)
 	FindUserById(db *gorm.DB, id int) (domain.User, error)
 	DeleteUser(db *gorm.DB, user domain.User) error
+	TotalBalance(db *gorm.DB, id int) (*float64, error)
 }
 
 type UserRepositoryImpl struct{}
+
+func (repository UserRepositoryImpl) TotalBalance(db *gorm.DB, id int) (*float64, error) {
+	var result *float64
+	db.Raw("SELECT SUM(amount) FROM transactions WHERE user_id = ?", id).Scan(&result)
+	return result, nil
+}
 
 func NewUserRepository() UserRepository {
 	return UserRepositoryImpl{}

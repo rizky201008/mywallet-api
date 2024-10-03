@@ -133,3 +133,15 @@ func TestCreateJwtToken(t *testing.T) {
 	assert.Nil(t, err)
 	fmt.Println(tokenString)
 }
+
+func TestGetUserBalance(t *testing.T) {
+	defer truncateAllUserData()
+	defer truncateAllTransactionData()
+	insertExampleUserData()
+	insertExampleTransactionData()
+	userId := 1
+	response, err := userRepository.TotalBalance(db, userId)
+	assert.Nil(t, err)
+	assert.NotNil(t, response)
+	fmt.Println(*response)
+}

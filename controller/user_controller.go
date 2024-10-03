@@ -9,10 +9,20 @@ type UserController interface {
 	Register(ctx *fiber.Ctx) error
 	Update(ctx *fiber.Ctx) error
 	Login(ctx *fiber.Ctx) error
+	GetBalance(ctx *fiber.Ctx) error
 }
 
 type UserControllerImpl struct {
 	UserService service.UserService
+}
+
+func (controller UserControllerImpl) GetBalance(ctx *fiber.Ctx) error {
+	response := controller.UserService.GetBalance(ctx)
+	return ctx.JSON(fiber.Map{
+		"status":  "0",
+		"message": "success",
+		"data":    response,
+	})
 }
 
 func (controller UserControllerImpl) Register(ctx *fiber.Ctx) error {

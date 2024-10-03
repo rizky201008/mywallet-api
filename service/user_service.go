@@ -20,6 +20,7 @@ type UserService interface {
 	FindUserById(ctx *fiber.Ctx) web.ResponseUser
 	DeleteUser(ctx *fiber.Ctx)
 	Login(ctx *fiber.Ctx) web.ResponseLogin
+	GetBalance(ctx *fiber.Ctx) web.ResponseUserBalance
 }
 
 type UserServiceImpl struct {
@@ -30,6 +31,29 @@ type UserServiceImpl struct {
 
 func NewUserService(db *gorm.DB, userRepo repository.UserRepository, vipers *viper.Viper) UserService {
 	return UserServiceImpl{UserRepo: userRepo, DB: db, Viper: vipers}
+}
+
+func (service UserServiceImpl) GetBalance(ctx *fiber.Ctx) web.ResponseUserBalance {
+	idString := ctx.GetRespHeader("Id")
+	id, err := strconv.Atoi(idString)
+	if err != nil {
+		panic(err)
+	}
+	var response web.ResponseUserBalance
+	data, err := service.UserRepo.TotalBalance(service.DB, id)
+	if err != nil {
+		panic(err)
+	}
+	var balance float64
+	if data != nil {
+		balance = *data
+	} else {
+		balance = 0
+	}
+	response = web.ResponseUserBalance{
+		CurrentBalance: balance,
+	}
+	return response
 }
 
 func (service UserServiceImpl) Login(ctx *fiber.Ctx) web.ResponseLogin {
