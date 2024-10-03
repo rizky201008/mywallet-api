@@ -48,9 +48,7 @@ func (controller UserControllerImpl) Login(ctx *fiber.Ctx) error {
 	return ctx.JSON(fiber.Map{
 		"status":  "0",
 		"message": "success",
-		"data": fiber.Map{
-			"token": response,
-		},
+		"data":    response,
 	})
 }
 
