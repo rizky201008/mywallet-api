@@ -70,6 +70,12 @@ func (service TransactionServiceImpl) CreateTransaction(ctx *fiber.Ctx) web.Resp
 	if err != nil {
 		panic(err)
 	}
+	idString := ctx.GetRespHeader("Id")
+	id, err := strconv.Atoi(idString)
+	if err != nil {
+		panic(err)
+	}
+	p.UserID = id
 	var response domain.Transaction
 	err = service.DB.Transaction(func(tx *gorm.DB) error {
 		transaction := helper.RequestTransactionToTransaction(*p)
