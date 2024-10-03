@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-func RequireAuth(ctx *fiber.Ctx, viper *viper.Viper, db *gorm.DB) error {
+func (middleware MiddlewareImpl) RequireAuth(ctx *fiber.Ctx) error {
 	tokenString := ctx.Get("Authorization")
 	if tokenString == "" {
 		panic(exception.NotMatchError{
@@ -22,11 +22,11 @@ func RequireAuth(ctx *fiber.Ctx, viper *viper.Viper, db *gorm.DB) error {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		// Don't forget to validate the alg is what you expect:
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 
 		// hmacSampleSecret is a []byte containing your secret, e.g. []byte("my_secret_key")
-		return []byte(viper.GetString("secrets.JWT_SECRET")), nil
+		return []byte(middleware.Viper.GetString("secrets.JWT_SECRET")), nil
 	})
 	if err != nil {
 		panic(err)
@@ -40,7 +40,7 @@ func RequireAuth(ctx *fiber.Ctx, viper *viper.Viper, db *gorm.DB) error {
 		}
 
 		var user domain.User
-		db.Find(&user, claims["sub"])
+		middleware.DB.Find(&user, claims["sub"])
 		if user.ID == 0 {
 			panic(exception.NotMatchError{
 				Err: "Authorization error, invalid token",
@@ -58,4 +58,8 @@ func RequireAuth(ctx *fiber.Ctx, viper *viper.Viper, db *gorm.DB) error {
 		panic(err)
 	}
 	return nil
+}
+
+func NewMiddleware(viper *viper.Viper, db *gorm.DB) Middleware {
+	return MiddlewareImpl{Viper: viper, DB: db}
 }

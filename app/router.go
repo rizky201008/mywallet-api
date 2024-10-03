@@ -5,7 +5,10 @@ import (
 	"github.com/rizky201008/mywallet-backend/middleware"
 )
 
+var Middleware middleware.Middleware
+
 func MainRouter(app *fiber.App) {
+	Middleware = middleware.NewMiddleware(Vipers, Db)
 	app.Get("/", func(ctx *fiber.Ctx) error {
 		return ctx.Redirect("/api")
 	})
@@ -19,6 +22,7 @@ func MainRouter(app *fiber.App) {
 	})
 	authRoute(api)
 	transactionRoute(api)
+	userRoute(api)
 }
 
 func authRoute(app fiber.Router) {
@@ -31,12 +35,17 @@ func authRoute(app fiber.Router) {
 func transactionRoute(app fiber.Router) {
 	transactionController := TransactionController
 	transaction := app.Group("/transaction")
-	transaction.Use(func(ctx *fiber.Ctx) error {
-		return middleware.RequireAuth(ctx, Vipers, Db)
-	})
+	transaction.Use(Middleware.RequireAuth)
 	transaction.Get("/", transactionController.GetAllTransactions)
 	transaction.Get("/:id", transactionController.GetTransaction)
 	transaction.Post("/", transactionController.CreateTransaction)
 	transaction.Put("/:id", transactionController.UpdateTransaction)
 	transaction.Delete("/:id", transactionController.DeleteTransaction)
+}
+
+func userRoute(app fiber.Router) {
+	userController := UserController
+	user := app.Group("/user")
+	user.Use(Middleware.RequireAuth)
+	user.Get("/balance", userController.GetBalance)
 }
